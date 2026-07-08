@@ -1,14 +1,12 @@
-version: "3.8"
-
 services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: appdb
+      DEBEZIUM_PASSWORD: ${DEBEZIUM_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -17,23 +15,16 @@ services:
 
   zookeeper:
     image: debezium/zookeeper:2.7.3.Final
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
 
   kafka:
     image: debezium/kafka:2.7.3.Final
-    container_name: kafka
     depends_on:
       - zookeeper
-    ports:
-      - "9092:9092"
     environment:
       ZOOKEEPER_CONNECT: zookeeper:2181
 
   connect:
     image: debezium/connect:2.7.3.Final
-    container_name: connect
     depends_on:
       - kafka
       - mysql
@@ -48,31 +39,9 @@ services:
 
   connect-register:
     image: curlimages/curl:8.10.1
-    container_name: connect-register
     depends_on:
       - connect
     volumes:
       - ./debezium:/debezium
-    entrypoint: ["sh", "/debezium/register-connector.sh"]
-
-  api:
-    build: ./api
-    container_name: api
-    restart: on-failure
-    depends_on:
-      - mysql
-    ports:
-      - "3000:3000"
     environment:
-      DB_HOST: mysql
-      DB_USER: root
-      DB_PASSWORD: rootpass
-      DB_NAME: appdb
-
-  client:
-    build: ./client
-    container_name: client
-    depends_on:
-      - api
-    ports:
-      - "8080:80"
+      DEBEZIUM_PASSWORD:
