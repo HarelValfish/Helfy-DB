@@ -44,4 +44,25 @@ services:
     volumes:
       - ./debezium:/debezium
     environment:
-      DEBEZIUM_PASSWORD:
+      DEBEZIUM_PASSWORD: ${DEBEZIUM_PASSWORD}
+    entrypoint: ["sh", "/debezium/register-connector.sh"]
+
+  api:
+    build: ./api
+    restart: on-failure
+    depends_on:
+      - mysql
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_NAME: appdb
+
+  client:
+    build: ./client
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
