@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+</head>
+<body>
+  <h1>Login</h1>
+
+  <form id="loginForm">
+    <label>
+      Username or email:
+      <input type="text" id="usernameOrEmail" required />
+    </label>
+    <br /><br />
+    <label>
+      Password:
+      <input type="password" id="password" required minlength="6" />
+    </label>
+    <br /><br />
+    <button type="submit">Log in</button>
+  </form>
+
+  <p id="message"></p>
+
+  <div id="protectedArea" style="display: none;">
+    <h2>Logged in</h2>
+    <button id="whoAmIBtn">Call protected /me endpoint</button>
+    <pre id="whoAmIResult"></pre>
+    <button id="logoutBtn">Log out</button>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000';
+
+    const form = document.getElementById('loginForm');
+    const message = document.getElementById('message');
+    const protectedArea = document.getElementById('protectedArea');
+
+    if (localStorage.getItem('token')) {
+      form.style.display = 'none';
+      protectedArea.style.display = 'block';
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      message.textContent = '';
+
+      const usernameOrEmail = document.getElementById('usernameOrEmail').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!usernameOrEmail || !password) {
+        message.textContent = 'Both fields are required.';
+        return;
+      }
+      if (password.length < 6) {
+        message.textContent = 'Password must be at least 6 characters.';
+        return;
+      }
+
+      const res = await fetch(API_BASE + '/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usernameOrEmail: usernameOrEmail, password: password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        message.textContent = data.error || 'Login failed.';
+        return;
+      }
+
+      localStorage.setItem('token', data.token);
+      message.textContent = 'Welcome, ' + data.user.username + '!';
+      form.style.display = 'none';
+      protectedArea.style.display = 'block';
+    });
+
+    document.getElementById('whoAmIBtn').addEventListener('click', async function () {
+      const token = localStorage.getItem('token');
+      const result = document.getElementById('whoAmIResult');
+
+      const res = await fetch(API_BASE + '/me', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      const data = await res.json();
+      result.textContent = JSON.stringify(data, null, 2);
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', function () {
+      localStorage.removeItem('token');
+      protectedArea.style.display = 'none';
+      form.style.display = 'block';
+      message.textContent = '';
+    });
+  </script>
+</body>
+</html>
