@@ -1,7 +1,6 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "description": "Simple REST API with login and token auth",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js"
