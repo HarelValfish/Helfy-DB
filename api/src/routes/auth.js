@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const pool = require('../db');
+const { logEvent } = require('../logger');
 
 const router = express.Router();
 
@@ -38,12 +39,11 @@ router.post('/login', async (req, res) => {
       [user.id, token, expiresAt]
     );
 
-    console.log(JSON.stringify({
-      timestamp: new Date().toISOString(),
+    logEvent({
       userId: user.id,
       action: 'LOGIN',
       ip: req.ip
-    }));
+    });
 
     res.json({
       token: token,
