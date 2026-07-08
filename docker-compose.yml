@@ -66,3 +66,11 @@ services:
       - api
     ports:
       - "8080:80"
+
+  consumer:
+    build: ./consumer
+    depends_on:
+      - kafka
+      - connect-register
+    environment:
+      KAFKA_BROKER: kafka:9092
