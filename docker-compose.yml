@@ -16,13 +16,13 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d
 
   zookeeper:
-    image: debezium/zookeeper:2.7
+    image: debezium/zookeeper:2.7.3.Final
     container_name: zookeeper
     ports:
       - "2181:2181"
 
   kafka:
-    image: debezium/kafka:2.7
+    image: debezium/kafka:2.7.3.Final
     container_name: kafka
     depends_on:
       - zookeeper
@@ -32,7 +32,7 @@ services:
       ZOOKEEPER_CONNECT: zookeeper:2181
 
   connect:
-    image: debezium/connect:2.7
+    image: debezium/connect:2.7.3.Final
     container_name: connect
     depends_on:
       - kafka
