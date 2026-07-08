@@ -5,7 +5,7 @@
     "database.hostname": "mysql",
     "database.port": "3306",
     "database.user": "debezium",
-    "database.password": "dbz_pass",
+    "database.password": "REPLACE_ME",
     "database.server.id": "184054",
     "topic.prefix": "appdb",
     "database.include.list": "appdb",
