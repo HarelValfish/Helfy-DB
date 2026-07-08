@@ -1,6 +1,6 @@
 # DevOps Home Test Assignment
 
-Full stack app with authentication, MySQL, Kafka, and Debezium CDC. Built for a DevOps take home test, kept intentionally simple, this is a skills demo, not a product.
+Full stack app with authentication, MySQL, Kafka, and Debezium CDC. Built for a DevOps take home test.
 
 ## Stack
 
